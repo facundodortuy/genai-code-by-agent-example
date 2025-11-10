@@ -1,8 +1,8 @@
 """FastMCP server for exposing the AI research agents system."""
 import uuid
-from typing import List
 
 from fastmcp import FastMCP
+
 from src.models import ResearchTopic
 from src.orchestrator import ResearchOrchestrator
 
@@ -14,16 +14,16 @@ orchestrator = ResearchOrchestrator(approval_threshold=0.7)
 
 
 @mcp.tool()
-async def research_topic(topic: str, keywords: List[str] = None) -> dict:
+async def research_topic(topic: str, keywords: list[str] = None) -> dict:
     """Research an AI topic using the three-agent system.
-    
+
     This tool coordinates the Researcher, Curator, and Editor agents to
     investigate an academic AI topic and produce a reviewed research report.
-    
+
     Args:
         topic: The AI research topic to investigate
         keywords: Optional list of related keywords
-        
+
     Returns:
         Complete research report with findings, curation, and editorial decision
     """
@@ -33,10 +33,10 @@ async def research_topic(topic: str, keywords: List[str] = None) -> dict:
         topic=topic,
         keywords=keywords or []
     )
-    
+
     # Execute research workflow
     report = await orchestrator.research_topic(research_topic)
-    
+
     # Return comprehensive results
     return {
         "topic": topic,
@@ -63,12 +63,12 @@ async def research_topic(topic: str, keywords: List[str] = None) -> dict:
 
 
 @mcp.tool()
-async def research_multiple_topics(topics: List[str]) -> dict:
+async def research_multiple_topics(topics: list[str]) -> dict:
     """Research multiple AI topics in sequence.
-    
+
     Args:
         topics: List of AI research topics
-        
+
     Returns:
         Summary of all research reports
     """
@@ -81,10 +81,10 @@ async def research_multiple_topics(topics: List[str]) -> dict:
         )
         for topic in topics
     ]
-    
+
     # Execute research for all topics
     reports = await orchestrator.research_multiple_topics(research_topics)
-    
+
     # Summarize results
     return {
         "total_topics": len(reports),
@@ -105,7 +105,7 @@ async def research_multiple_topics(topics: List[str]) -> dict:
 @mcp.tool()
 def get_research_statistics() -> dict:
     """Get statistics about all research conducted.
-    
+
     Returns:
         Statistics including approval rates and average scores
     """
@@ -115,12 +115,12 @@ def get_research_statistics() -> dict:
 @mcp.tool()
 def get_approved_research() -> dict:
     """Get all approved research reports.
-    
+
     Returns:
         List of approved research with summaries
     """
     reports = orchestrator.get_approved_reports()
-    
+
     return {
         "count": len(reports),
         "reports": [
@@ -140,12 +140,12 @@ def get_approved_research() -> dict:
 @mcp.tool()
 def get_rejected_research() -> dict:
     """Get all rejected research reports with improvement suggestions.
-    
+
     Returns:
         List of rejected research with reasons and improvements needed
     """
     reports = orchestrator.get_rejected_reports()
-    
+
     return {
         "count": len(reports),
         "reports": [
@@ -166,13 +166,13 @@ def get_rejected_research() -> dict:
 def list_all_reports() -> str:
     """Resource providing access to all research reports."""
     reports = orchestrator.get_all_reports()
-    
+
     if not reports:
         return "No research reports available yet. Use research_topic() to start researching."
-    
+
     output = "# AI Research Reports\n\n"
     output += f"Total Reports: {len(reports)}\n\n"
-    
+
     for report in reports:
         output += f"## {report.topic.topic}\n"
         output += f"- **Status**: {report.final_status.value.upper()}\n"
@@ -181,7 +181,7 @@ def list_all_reports() -> str:
         output += f"- **Decision**: {report.decision.decision}\n"
         output += f"- **Categories**: {', '.join(report.curated.categorization)}\n"
         output += "\n"
-    
+
     return output
 
 
@@ -189,12 +189,12 @@ def list_all_reports() -> str:
 def list_approved_reports() -> str:
     """Resource providing access to approved research reports."""
     reports = orchestrator.get_approved_reports()
-    
+
     if not reports:
         return "No approved research reports yet."
-    
+
     output = "# Approved AI Research\n\n"
-    
+
     for report in reports:
         output += f"## {report.finding.title}\n\n"
         output += f"**Topic**: {report.topic.topic}\n\n"
@@ -206,17 +206,17 @@ def list_approved_reports() -> str:
         output += f"**Quality Score**: {report.curated.quality_score:.2f}\n"
         output += f"**Categories**: {', '.join(report.curated.categorization)}\n\n"
         output += "---\n\n"
-    
+
     return output
 
 
 @mcp.prompt()
 def research_prompt(topic: str) -> str:
     """Generate a prompt for researching an AI topic.
-    
+
     Args:
         topic: The AI topic to research
-        
+
     Returns:
         Formatted prompt
     """
@@ -242,17 +242,17 @@ After receiving the results, you can:
 
 
 @mcp.prompt()
-def batch_research_prompt(topics: List[str]) -> str:
+def batch_research_prompt(topics: list[str]) -> str:
     """Generate a prompt for researching multiple AI topics.
-    
+
     Args:
         topics: List of AI topics to research
-        
+
     Returns:
         Formatted prompt
     """
     topics_formatted = "\n".join(f"{i+1}. {topic}" for i, topic in enumerate(topics))
-    
+
     return f"""I need to research multiple AI topics systematically:
 
 {topics_formatted}

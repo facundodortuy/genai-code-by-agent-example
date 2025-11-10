@@ -1,50 +1,50 @@
 """Researcher agent for gathering information on AI topics."""
-from typing import List
+
 from src.agents.base import BaseAgent
 from src.models import ResearchFinding, ResearchStatus, ResearchTopic
 
 
 class ResearcherAgent(BaseAgent):
     """Agent responsible for researching AI topics in academic contexts."""
-    
+
     def __init__(self):
         super().__init__(
             name="Researcher",
             role="Academic AI Research Specialist"
         )
-    
+
     async def process(self, topic: ResearchTopic) -> ResearchFinding:
         """Research a given topic and produce findings.
-        
+
         Args:
             topic: Research topic to investigate
-            
+
         Returns:
             Research findings
         """
         self.log(f"Starting research on topic: {topic.topic}")
-        
+
         # Simulate research process with realistic mock data
         # In a real implementation, this would query academic databases,
         # use LLM APIs, or search scholarly articles
-        
+
         finding = await self._conduct_research(topic)
-        
+
         self.log(f"Completed research: {finding.title}")
         return finding
-    
+
     async def _conduct_research(self, topic: ResearchTopic) -> ResearchFinding:
         """Conduct detailed research on the topic.
-        
+
         Args:
             topic: Topic to research
-            
+
         Returns:
             Research finding
         """
         # Mock research based on common AI academic topics
         research_data = self._generate_research_data(topic.topic, topic.keywords)
-        
+
         finding = ResearchFinding(
             id=self.generate_id(),
             topic_id=topic.id,
@@ -55,22 +55,22 @@ class ResearcherAgent(BaseAgent):
             relevance_score=research_data["relevance_score"],
             status=ResearchStatus.PENDING
         )
-        
+
         return finding
-    
-    def _generate_research_data(self, topic: str, keywords: List[str]) -> dict:
+
+    def _generate_research_data(self, topic: str, keywords: list[str]) -> dict:
         """Generate realistic research data based on the topic.
-        
+
         Args:
             topic: Research topic
             keywords: Related keywords
-            
+
         Returns:
             Dictionary with research data
         """
         # Create contextual research based on topic
         topic_lower = topic.lower()
-        
+
         if "machine learning" in topic_lower or "ml" in topic_lower:
             return {
                 "title": f"Advances in Machine Learning: {topic}",
@@ -93,7 +93,7 @@ class ResearcherAgent(BaseAgent):
                 ],
                 "relevance_score": 0.92
             }
-        
+
         elif "natural language processing" in topic_lower or "nlp" in topic_lower:
             return {
                 "title": f"Natural Language Processing Breakthroughs: {topic}",
@@ -116,7 +116,7 @@ class ResearcherAgent(BaseAgent):
                 ],
                 "relevance_score": 0.95
             }
-        
+
         elif "computer vision" in topic_lower or "cv" in topic_lower:
             return {
                 "title": f"Computer Vision Innovations: {topic}",
@@ -138,7 +138,7 @@ class ResearcherAgent(BaseAgent):
                 ],
                 "relevance_score": 0.89
             }
-        
+
         elif "ethics" in topic_lower or "fairness" in topic_lower or "bias" in topic_lower:
             return {
                 "title": f"AI Ethics and Fairness: {topic}",
@@ -160,7 +160,7 @@ class ResearcherAgent(BaseAgent):
                 ],
                 "relevance_score": 0.91
             }
-        
+
         else:
             # Generic AI research
             return {
@@ -173,7 +173,11 @@ class ResearcherAgent(BaseAgent):
                 ),
                 "key_points": [
                     f"Significant progress in {topic} demonstrates AI's expanding capabilities",
-                    "Integration with {', '.join(keywords[:2]) if keywords else 'related fields'} shows promising results",
+                    (
+                        "Integration with "
+                        f"{', '.join(keywords[:2]) if keywords else 'related fields'}"
+                        " shows promising results"
+                    ),
                     "Scalability and efficiency remain important research directions",
                     "Real-world applications validate theoretical advances"
                 ],
